@@ -12,10 +12,12 @@ import {
   useHistory,
 } from 'react-router-dom';
 import { connect, useSelector } from 'react-redux';
+import { noop } from 'lodash';
 import moment from 'moment';
 
 // Components
 import LowCarbonInfoTooltip from '../../components/tooltips/lowcarboninfotooltip';
+import CarbonIntensitySquare from '../../components/carbonintensitysquare';
 import CircularGauge from '../../components/circulargauge';
 import ContributorList from '../../components/contributorlist';
 import CountryHistoryCarbonGraph from '../../components/countryhistorycarbongraph';
@@ -29,7 +31,6 @@ import { dispatchApplication } from '../../store';
 
 // Modules
 import { useCurrentZoneData } from '../../hooks/redux';
-import { useCo2ColorScale } from '../../hooks/theme';
 import { useTrackEvent } from '../../hooks/tracking';
 import { flagUri } from '../../helpers/flags';
 import { getFullZoneName, __ } from '../../helpers/translation';
@@ -89,7 +90,6 @@ const CountryPanel = ({
   const [tooltip, setTooltip] = useState(null);
 
   const isLoadingHistories = useSelector(state => state.data.isLoadingHistories);
-  const co2ColorScale = useCo2ColorScale();
 
   const trackEvent = useTrackEvent();
   const history = useHistory();
@@ -170,29 +170,20 @@ const CountryPanel = ({
         {hasParser && (
           <React.Fragment>
             <div className="country-table-header-inner">
-              <div className="country-col country-emission-intensity-wrap">
-                <div
-                  id="country-emission-rect"
-                  className="country-col-box emission-rect emission-rect-overview"
-                  style={{ backgroundColor: co2ColorScale(co2Intensity) }}
-                >
-                  <div>
-                    <span className="country-emission-intensity">
-                      {Math.round(co2Intensity) || '?'}
-                    </span>
-                    g
-                  </div>
-                </div>
-                <div className="country-col-headline">{__('country-panel.carbonintensity')}</div>
-                <div className="country-col-subtext">(gCO₂eq/kWh)</div>
-              </div>
+              <CarbonIntensitySquare value={co2Intensity} withSubtext />
               <div className="country-col country-lowcarbon-wrap">
                 <div id="country-lowcarbon-gauge" className="country-gauge-wrap">
                   <CountryLowCarbonGauge
-                    onMouseMove={(x, y) => setTooltip({ position: { x, y } })}
+                    onClick={isMobile ? ((x, y) => setTooltip({ position: { x, y } })) : noop}
+                    onMouseMove={!isMobile ? ((x, y) => setTooltip({ position: { x, y } })) : noop}
                     onMouseOut={() => setTooltip(null)}
                   />
-                  {tooltip && <LowCarbonInfoTooltip position={tooltip.position} />}
+                  {tooltip && (
+                    <LowCarbonInfoTooltip
+                      position={tooltip.position}
+                      onClose={() => setTooltip(null)}
+                    />
+                  )}
                 </div>
                 <div className="country-col-headline">{__('country-panel.lowcarbon')}</div>
                 <div className="country-col-subtext" />
@@ -267,7 +258,7 @@ const CountryPanel = ({
             <div>
               {__('country-panel.source')}
               {': '}
-              <a href="https://github.com/tmrowco/electricitymap-contrib#real-time-electricity-data-sources" target="_blank">
+              <a href="https://github.com/tmrowco/electricitymap-contrib/blob/master/DATA_SOURCES.md#real-time-electricity-data-sources" target="_blank">
                 <span className="country-data-source">{data.source || '?'}</span>
               </a>
               <small>
@@ -290,7 +281,7 @@ const CountryPanel = ({
           </React.Fragment>
         ) : (
           <div className="zone-details-no-parser-message">
-            <span dangerouslySetInnerHTML={{ __html: __('country-panel.noParserInfo', 'https://github.com/tmrowco/electricitymap-contrib#adding-a-new-region') }} />
+            <span dangerouslySetInnerHTML={{ __html: __('country-panel.noParserInfo', 'https://github.com/tmrowco/electricitymap-contrib/wiki/Getting-started') }} />
           </div>
         )}
 
@@ -311,7 +302,7 @@ const CountryPanel = ({
             />
             { /* Slack */}
             <span className="slack-button">
-              <a href="https://slack.tmrow.co" target="_blank" className="slack-btn">
+              <a href="https://slack.tmrow.com" target="_blank" className="slack-btn">
                 <span className="slack-ico" />
                 <span className="slack-text">Slack</span>
               </a>

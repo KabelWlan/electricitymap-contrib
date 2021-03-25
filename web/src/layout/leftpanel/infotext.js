@@ -22,7 +22,7 @@ export default () => (
       {' '}(
       {__('panel-initial-text.see')}
       {' '}
-      <a href="https://github.com/tmrowco/electricitymap-contrib#data-sources" target="_blank">
+      <a href="https://github.com/tmrowco/electricitymap-contrib/blob/master/DATA_SOURCES.md" target="_blank">
         {__('panel-initial-text.datasources')}
       </a>
       ).{' '}
@@ -30,7 +30,7 @@ export default () => (
         dangerouslySetInnerHTML={{
           __html: __(
             'panel-initial-text.contribute',
-            'https://github.com/tmrowco/electricitymap-contrib#adding-a-new-region',
+            'https://github.com/tmrowco/electricitymap-contrib/wiki/Getting-started',
           ),
         }}
       />
@@ -63,7 +63,7 @@ export default () => (
         />
         { /* Slack */}
         <span className="slack-button">
-          <a href="https://slack.tmrow.co" target="_blank" className="slack-btn">
+          <a href="https://slack.tmrow.com" target="_blank" className="slack-btn">
             <span className="slack-ico" />
             <span className="slack-text">Slack</span>
           </a>
